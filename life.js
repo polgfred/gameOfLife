@@ -20,25 +20,31 @@ function Set() {
   }
 }
 
+var neighboringOffsets = [
+    [-1, -1]
+  , [-1,  0]
+  , [-1,  1]
+  , [ 0, -1]
+  , [ 0,  1]
+  , [ 1, -1]
+  , [ 1,  0]
+  , [ 1,  1]
+]
+
 function Point(x, y) {
-  this.toString = function() { // for hash key
+  // for set key
+  this.toString = function() {
     return x + ':' + y
   }
 
   this.neighbors = function() {
     var neighbors = new Set()
 
-    Point.neighboringOffsets.forEach(function(offsets) {
+    neighboringOffsets.forEach(function(offsets) {
       neighbors.add(new Point(x + offsets[0], y + offsets[1]))
     })
 
     return neighbors
-  }
-
-  this.neighborsAndSelf = function() {
-    var neighborsAndSelf = this.neighbors()
-    neighborsAndSelf.add(this)
-    return neighborsAndSelf
   }
 
   this.neighborCountInSet = function(points) {
@@ -54,35 +60,37 @@ function Point(x, y) {
   }
 }
 
-Point.neighboringOffsets = [
-    [-1, -1]
-  , [-1,  0]
-  , [-1,  1]
-  , [ 0, -1]
-  , [ 0,  1]
-  , [ 1, -1]
-  , [ 1,  0]
-  , [ 1,  1]
-]
-
 function World() {
-  var points = new Set()
+  var population = new Set()
 
   this.add = function(p) {
-    points.add(p)
+    population.add(p)
   }
 
   this.size = function() {
-    return points.size()
+    return population.size()
   }
 
   this.contains = function(p) {
-    return points.contains(p)
+    return population.contains(p)
+  }
+
+  function nextGenTestSet() {
+    var testSet = new Set()
+
+    population.forEach(function(p) {
+      testSet.add(p)
+      p.neighbors().forEach(function(n) {
+        testSet.add(n)
+      })
+    })
+
+    return testSet
   }
 
   function shouldLive(p) {
-    var isAlive = points.contains(p)
-      , neighborCount = p.neighborCountInSet(points)
+    var isAlive = population.contains(p)
+      , neighborCount = p.neighborCountInSet(population)
 
     return isAlive
       ? (neighborCount == 2 || neighborCount == 3)
@@ -92,15 +100,13 @@ function World() {
   this.advance = function() {
     var nextGen = new Set()
 
-    points.forEach(function(p) {
-      p.neighborsAndSelf().forEach(function(q) {
-        if (shouldLive(q)) {
-          nextGen.add(q)
-        }
-      })
+    nextGenTestSet().forEach(function(p) {
+      if (shouldLive(p)) {
+        nextGen.add(p)
+      }
     })
 
-    points = nextGen
+    population = nextGen
   }
 }
 
