@@ -1,29 +1,29 @@
 function Set() {
-	var storage = {}
+  var storage = {}
 
-	this.add = function(e) {
-		storage[e] = e
-	}
+  this.add = function(e) {
+    storage[e] = e
+  }
 
-	this.contains = function(e) {
-		return !!storage[e]
-	}
+  this.contains = function(e) {
+    return !!storage[e]
+  }
 
-	this.size = function() {
-		return Object.keys(storage).length
-	}
+  this.size = function() {
+    return Object.keys(storage).length
+  }
 
-	this.forEach = function(iter) {
-		Object.keys(storage).forEach(function(e) {
-			iter(storage[e])
-		})
-	}
+  this.forEach = function(iter) {
+    Object.keys(storage).forEach(function(e) {
+      iter(storage[e])
+    })
+  }
 }
 
 function Point(x, y) {
-	this.toString = function() { // for hash key
-		return x + ':' + y
-	}
+  this.toString = function() { // for hash key
+    return x + ':' + y
+  }
 
   this.neighbors = function() {
     var neighbors = new Set()
@@ -66,19 +66,19 @@ Point.neighboringOffsets = [
 ]
 
 function World() {
-	var points = new Set()
+  var points = new Set()
 
-	this.add = function(p) {
-		points.add(p)
-	}
+  this.add = function(p) {
+    points.add(p)
+  }
 
   this.size = function() {
     return points.size()
   }
 
-	this.contains = function(p) {
-		return points.contains(p)
-	}
+  this.contains = function(p) {
+    return points.contains(p)
+  }
 
   function shouldLive(p) {
     var isAlive = points.contains(p)
@@ -89,19 +89,19 @@ function World() {
       : neighborCount == 3
   }
 
-	this.advance = function() {
+  this.advance = function() {
     var nextGen = new Set()
 
-		points.forEach(function(p) {
+    points.forEach(function(p) {
       p.neighborsAndSelf().forEach(function(q) {
         if (shouldLive(q)) {
           nextGen.add(q)
         }
       })
-		})
+    })
 
     points = nextGen
-	}
+  }
 }
 
 exports.Point = Point
