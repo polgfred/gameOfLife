@@ -5,6 +5,12 @@ function Set() {
     storage[e] = e
   }
 
+  this.addAll = function(es) {
+    es.each(function(e) {
+      this.add(e)
+    }.bind(this))
+  }
+
   this.contains = function(e) {
     return !!storage[e]
   }
@@ -13,10 +19,24 @@ function Set() {
     return Object.keys(storage).length
   }
 
-  this.forEach = function(iter) {
-    Object.keys(storage).forEach(function(e) {
-      iter(storage[e])
+  var reduce = this.reduce = function(reducer, a) {
+    return Object.keys(storage).reduce(function(a, k) {
+      return reducer(a, storage[k])
+    }, a)
+  }
+
+  this.each = function(iterator) {
+    reduce(function(_, e) {
+      iterator(e)
     })
+  }
+
+  this.filter = function(predicate) {
+    return reduce(function(a, e) {
+      if (predicate(e))
+        a.add(e)
+      return a
+    }, new Set())
   }
 }
 
@@ -38,30 +58,25 @@ function Point(x, y) {
   }
 
   this.neighbors = function() {
-    var neighbors = new Set()
-
-    neighboringOffsets.forEach(function(offsets) {
+    return neighboringOffsets.reduce(function(neighbors, offsets) {
       neighbors.add(new Point(x + offsets[0], y + offsets[1]))
-    })
-
-    return neighbors
+      return neighbors
+    }, new Set())
   }
 
   this.neighborCountInSet = function(points) {
-    var count = 0
-
-    this.neighbors().forEach(function(n) {
-      if (points.contains(n)) {
-        count++
-      }
-    })
-
-    return count
+    return this.neighbors().reduce(function(count, n) {
+      return points.contains(n) ? count + 1 : count
+    }, 0)
   }
 }
 
 function World() {
   var population = new Set()
+
+  this.population = function() {
+    return population
+  }
 
   this.add = function(p) {
     population.add(p)
@@ -76,40 +91,25 @@ function World() {
   }
 
   function nextGenTestSet() {
-    var testSet = new Set()
-
-    population.forEach(function(p) {
+    return population.reduce(function(testSet, p) {
       testSet.add(p)
-      p.neighbors().forEach(function(n) {
-        testSet.add(n)
-      })
-    })
-
-    return testSet
-  }
-
-  function shouldLive(p) {
-    var isAlive = population.contains(p)
-      , neighborCount = p.neighborCountInSet(population)
-
-    return isAlive
-      ? (neighborCount == 2 || neighborCount == 3)
-      : neighborCount == 3
+      testSet.addAll(p.neighbors())
+      return testSet
+    }, new Set())
   }
 
   this.advance = function() {
-    var nextGen = new Set()
+    population = nextGenTestSet().filter(function(p) {
+      var neighborCount = p.neighborCountInSet(population)
 
-    nextGenTestSet().forEach(function(p) {
-      if (shouldLive(p)) {
-        nextGen.add(p)
-      }
+      return population.contains(p)
+        ? neighborCount == 2 || neighborCount == 3
+        : neighborCount == 3
     })
-
-    population = nextGen
   }
 }
 
+var exports = exports || window
 exports.Point = Point
 exports.Set   = Set
 exports.World = World
