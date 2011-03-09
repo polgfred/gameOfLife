@@ -3,18 +3,34 @@
   <head>
     <title>Game of Life</title>
     <style>
+      body {
+        margin: 10px;
+        font-family: Helvetica;
+      }
+
+      p {
+        font-size: 14px;
+      }
+
       #world {
+        border: 2px solid #000;
         border-spacing: 0;
         border-collapse: collapse;
+        float: left;
+        margin: 0 20px 0 0;
+        -webkit-box-shadow: 3px 3px 6px #222;
       }
+
       #world td {
         border: 1px solid #000;
         padding: 0;
       }
+      
       #world td div {
         width: 4px;
         height: 4px;
       }
+      
       #world td div.alive {
         background-color: #444;
       }
@@ -36,8 +52,27 @@
     </script>
   </head>
   <body>
-    <h3>Game of Life</h3>
-
+    <h2>Conway's Game of Life</h2>
     <table id="world"></table>
+    <p>
+      Conway was interested in a problem presented in the 1940s by renowned
+      mathematician John von Neumann, who tried to find a hypothetical
+      machine that could build copies of itself, and succeeded when he
+      found a mathematical model for such a machine with very complicated
+      rules on a rectangular grid. The Game of Life emerged as Conway's
+      successful attempt to simplify von Neumann's ideas.
+    </p>
+    <p>
+      During this early research, Conway discovered that the F-pentomino
+      (which he called the "R-pentomino") failed to stabilize in a small
+      number of generations. In fact, it takes 1103 generations to stabilize, 
+      by which time it has a population of 116 and has fired six escaping
+      gliders (in fact, these were the first gliders ever discovered).
+    </p>
+    <cite>
+      <a href="http://en.wikipedia.org/wiki/Conway's_Game_of_Life">
+        http://en.wikipedia.org/wiki/Conway's_Game_of_Life
+      </a>
+    </cite>
   </body>
 </html>
