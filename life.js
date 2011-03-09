@@ -109,7 +109,8 @@ function World() {
   }
 }
 
-var exports = exports || window
-exports.Point = Point
-exports.Set   = Set
-exports.World = World
+if (typeof exports != 'undefined') {
+  exports.Point = Point
+  exports.Set   = Set
+  exports.World = World
+}
