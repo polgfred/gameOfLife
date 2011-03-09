@@ -1,43 +1,50 @@
 function Set() {
-  var storage = {}
+  this.storage = {}
+}
 
-  this.add = function(e) {
-    storage[e] = e
-  }
+Set.prototype = {
+  add: function(e) {
+    this.storage[e] = e
+  },
 
-  this.addAll = function(es) {
+  addAll: function(es) {
     es.each(function(e) {
       this.add(e)
     }.bind(this))
-  }
+  },
 
-  this.contains = function(e) {
-    return !!storage[e]
-  }
+  contains: function(e) {
+    return !!this.storage[e]
+  },
 
-  this.size = function() {
-    return Object.keys(storage).length
-  }
+  size: function() {
+    return Object.keys(this.storage).length
+  },
 
-  var reduce = this.reduce = function(reducer, a) {
-    return Object.keys(storage).reduce(function(a, k) {
-      return reducer(a, storage[k])
-    }, a)
-  }
+  reduce: function(reducer, a) {
+    return Object.keys(this.storage).reduce(function(a, k) {
+      return reducer(a, this.storage[k])
+    }.bind(this), a)
+  },
 
-  this.each = function(iterator) {
-    reduce(function(_, e) {
+  each: function(iterator) {
+    this.reduce(function(_, e) {
       iterator(e)
     })
-  }
+  },
 
-  this.filter = function(predicate) {
-    return reduce(function(a, e) {
+  filter: function(predicate) {
+    return this.reduce(function(a, e) {
       if (predicate(e))
         a.add(e)
       return a
     }, new Set())
   }
+}
+
+function Point(x, y) {
+  this.x = x
+  this.y = y
 }
 
 var neighboringOffsets = [
@@ -51,20 +58,20 @@ var neighboringOffsets = [
   , [ 1,  1]
 ]
 
-function Point(x, y) {
+Point.prototype = {
   // for set key
-  this.toString = function() {
-    return x + ':' + y
-  }
+  toString: function() {
+    return this.x + ':' + this.y
+  },
 
-  this.neighbors = function() {
+  neighbors: function() {
     return neighboringOffsets.reduce(function(neighbors, offsets) {
-      neighbors.add(new Point(x + offsets[0], y + offsets[1]))
+      neighbors.add(new Point(this.x + offsets[0], this.y + offsets[1]))
       return neighbors
-    }, new Set())
-  }
+    }.bind(this), new Set())
+  },
 
-  this.neighborCountInSet = function(points) {
+  neighborCountInSet: function(points) {
     return this.neighbors().reduce(function(count, n) {
       return points.contains(n) ? count + 1 : count
     }, 0)
@@ -72,40 +79,38 @@ function Point(x, y) {
 }
 
 function World() {
-  var population = new Set()
+  this.population = new Set()
+}
 
-  this.population = function() {
-    return population
-  }
+World.prototype = {
+  add: function(p) {
+    this.population.add(p)
+  },
 
-  this.add = function(p) {
-    population.add(p)
-  }
+  size: function() {
+    return this.population.size()
+  },
 
-  this.size = function() {
-    return population.size()
-  }
+  contains: function(p) {
+    return this.population.contains(p)
+  },
 
-  this.contains = function(p) {
-    return population.contains(p)
-  }
-
-  function nextGenTestSet() {
-    return population.reduce(function(testSet, p) {
+  nextGenTestSet: function() {
+    return this.population.reduce(function(testSet, p) {
       testSet.add(p)
       testSet.addAll(p.neighbors())
       return testSet
     }, new Set())
-  }
+  },
 
-  this.advance = function() {
-    population = nextGenTestSet().filter(function(p) {
-      var neighborCount = p.neighborCountInSet(population)
+  advance: function() {
+    this.population = this.nextGenTestSet().filter(function(p) {
+      var neighborCount = p.neighborCountInSet(this.population)
 
-      return population.contains(p)
+      return this.contains(p)
         ? neighborCount == 2 || neighborCount == 3
         : neighborCount == 3
-    })
+    }.bind(this))
   }
 }
 

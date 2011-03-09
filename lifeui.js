@@ -31,7 +31,7 @@ function LifeUI(element, coords) {
   }
 
   function togglePopulation() {
-    world.population().each(function(p) {
+    world.population.each(function(p) {
       if (board[p]) {
         board[p].toggleClass('alive')
       }
