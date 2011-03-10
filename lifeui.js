@@ -1,23 +1,20 @@
-function LifeUI(element, coords) {
+function LifeUI(id, coords) {
   var board, world
 
   function buildBoard() {
-    var row, col, div, p
-
+    var element = document.getElementById(id)
     board = {}
 
     for (var y = 50; y >= -50; y--) {
-      row = $('<tr>')
-      element.append(row)
+      var row = document.createElement('tr')
+      element.appendChild(row)
 
       for (var x = -50; x <= 50; x++) {
-        col = $('<td>')
-        div = $('<div>')
-        row.append(col)
-        col.append(div)
-
-        p = new Point(x, y)
-        board[p] = div
+        var col = document.createElement('td')
+        row.appendChild(col)
+        var div = document.createElement('div')
+        col.appendChild(div)
+        board[new Point(x, y)] = div
       }
     }
   }
@@ -30,18 +27,28 @@ function LifeUI(element, coords) {
     })
   }
 
-  function togglePopulation() {
+  function showPopulation() {
     world.population.each(function(p) {
-      if (board[p]) {
-        board[p].toggleClass('alive')
+      var div = board[p]
+      if (div) {
+        div.setAttribute('class', 'alive')
+      }
+    })
+  }
+
+  function hidePopulation() {
+    world.population.each(function(p) {
+      var div = board[p]
+      if (div) {
+        div.removeAttribute('class')
       }
     })
   }
 
   function loopForever() {
-    togglePopulation()
+    showPopulation()
     setTimeout(function() {
-      togglePopulation()
+      hidePopulation()
       world.advance()
       loopForever()
     }, 200)
