@@ -44,7 +44,7 @@ function LifeUI(element, coords) {
       togglePopulation()
       world.advance()
       loopForever()
-    }, 250)
+    }, 200)
   }
 
   this.start = function() {
