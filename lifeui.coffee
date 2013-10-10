@@ -1,6 +1,5 @@
 LifeUI =
   board: {}
-
   world: new World
 
   buildBoard: (id) ->

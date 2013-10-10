@@ -1,31 +1,17 @@
 class Set
-  constructor: -> @storage = {}
-
-  add: (e) -> @storage[e] = e
-
-  addAll: (es) ->
-    es.each (e) =>
-      @add(e)
-
-  contains: (e) -> !!@storage[e]
-
-  size: -> Object.keys(@storage).length
-
-  reduce: (reducer, a) ->
-    Object.keys(@storage).reduce (a, k) =>
-      reducer(a, @storage[k])
-    , a
-
-  each: (iter) ->
-    @reduce (_, e) -> iter(e)
-
-  filter: (pred) ->
-    @reduce (a, e) ->
-      a.add(e) if pred(e)
-      a
-    , new Set
+  constructor: -> @items = {}
+  size: -> Object.keys(@items).length
+  add: (e) -> @items[e] = e; @
+  contains: (e) -> !!@items[e]
+  reduce: (f, a) -> Object.keys(@items).reduce ((a, k) => f(a, @items[k])), a
+  each: (f) -> @reduce ((_, e) -> f(e)); @
+  filter: (pred) -> @reduce ((a, e) -> a.add e if pred e; a), new Set
+  addAll: (es) -> es.each ((e) => @add e); @
 
 class Point
+  constructor: (x, y) -> @x = x; @y = y
+  toString: -> "#{@x}:#{@y}"
+
   neighboringOffsets: [
     [-1, -1]
   , [-1,  0]
@@ -37,46 +23,30 @@ class Point
   , [ 1,  1]
   ]
 
-  constructor: (x, y) ->
-    @x = x
-    @y = y
-
-  toString: -> "#{@x}:#{@y}"
-
   neighbors: ->
-    @neighboringOffsets.reduce (neighbors, offsets) =>
-      neighbors.add(new Point(@x + offsets[0], @y + offsets[1]))
-      neighbors
+    @neighboringOffsets.reduce (neighbors, [dx, dy]) =>
+      neighbors.add new Point(@x + dx, @y + dy)
     , new Set
 
-  neighborCountInSet: (points) ->
-    @neighbors().reduce (count, n) ->
-      if points.contains(n) then count + 1 else count
-    , 0
+  neighborsIn: (points) ->
+    @neighbors().reduce ((count, n) -> if points.contains(n) then count + 1 else count), 0
 
 class World
   constructor: -> @pop = new Set
-
-  add: (p) -> @pop.add(p)
-
   size: -> @pop.size()
-
-  contains: (p) -> @pop.contains(p)
+  add: (p) -> @pop.add p
+  contains: (p) -> @pop.contains p
 
   nextGenTestSet: ->
-    @pop.reduce (testSet, p) ->
-      testSet.add(p)
-      testSet.addAll(p.neighbors())
-      testSet
-    , new Set
+    @pop.reduce ((s, p) -> s.add p; s.addAll p.neighbors()), new Set
 
   advance: ->
     @pop = @nextGenTestSet().filter (p) =>
-      neighborCount = p.neighborCountInSet(@pop)
-      if @contains(p)
-        neighborCount == 2 or neighborCount == 3
+      count = p.neighborsIn @pop
+      if @contains p
+        count == 2 or count == 3
       else
-        neighborCount == 3
+        count == 3
 
 # exports
 global = exports ? this
