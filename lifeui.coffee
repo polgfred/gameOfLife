@@ -14,10 +14,12 @@ LifeUI =
         div = document.createElement('div')
         col.appendChild(div)
         @board[new Point(x, y)] = div
+    return
 
   buildWorld: (coords) ->
     coords.forEach (coords) =>
       @world.add(new Point(coords[0], coords[1]))
+    return
 
   showPop: ->
     @world.pop.each (p) =>

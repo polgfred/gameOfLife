@@ -6,30 +6,23 @@
     board: {},
     world: new World,
     buildBoard: function(id) {
-      var col, div, elem, row, x, y, _i, _results;
+      var col, div, elem, row, x, y, _i, _j;
       elem = document.getElementById(id);
-      _results = [];
       for (y = _i = 50; _i >= -50; y = _i += -1) {
         row = document.createElement('tr');
         elem.appendChild(row);
-        _results.push((function() {
-          var _j, _results1;
-          _results1 = [];
-          for (x = _j = -50; _j <= 50; x = _j += 1) {
-            col = document.createElement('td');
-            row.appendChild(col);
-            div = document.createElement('div');
-            col.appendChild(div);
-            _results1.push(this.board[new Point(x, y)] = div);
-          }
-          return _results1;
-        }).call(this));
+        for (x = _j = -50; _j <= 50; x = _j += 1) {
+          col = document.createElement('td');
+          row.appendChild(col);
+          div = document.createElement('div');
+          col.appendChild(div);
+          this.board[new Point(x, y)] = div;
+        }
       }
-      return _results;
     },
     buildWorld: function(coords) {
       var _this = this;
-      return coords.forEach(function(coords) {
+      coords.forEach(function(coords) {
         return _this.world.add(new Point(coords[0], coords[1]));
       });
     },
