@@ -17,7 +17,7 @@ LifeUI =
 
   buildWorld: (coords) ->
     coords.forEach (coords) =>
-      @world.add(new Point(coords[0], coords[1]))
+      @world.pop.add(new Point(coords[0], coords[1]))
     return
 
   showPop: ->

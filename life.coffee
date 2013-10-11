@@ -1,17 +1,41 @@
 class Set
-  constructor: -> @items = {}
-  size: -> Object.keys(@items).length
-  add: (e) -> @items[e] = e; @
-  contains: (e) -> !!@items[e]
-  reduce: (f, a) -> Object.keys(@items).reduce ((a, k) => f(a, @items[k])), a
-  each: (f) -> @reduce ((_, e) -> f(e)); @
-  filter: (pred) -> @reduce ((a, e) -> a.add e if pred e; a), new Set
-  addAll: (es) -> es.each ((e) => @add e); @
+  constructor: ->
+    @items = {}
+  add: (item) ->
+    @items[item] = item
+    @
+  contains: (item) ->
+    !! @items[item]
+  each: (iterator) ->
+    iterator(item) for own _, item of @items
+    @
+  reduce: (reducer, memo) ->
+    memo = reducer(memo, item) for own _, item of @items
+    memo
+  filter: (predicate) ->
+    set = new Set
+    set.add item for own _, item of @items when predicate item
+    set
+  count: (predicate) ->
+    count = 0
+    count += 1 for own _, item of @items when predicate item
+    count
+  size: ->
+    @count -> true
+  addAll: (set) ->
+    set.each (item) => @add item
+    @
 
 class Point
-  constructor: (x, y) -> @x = x; @y = y
-  toString: -> "#{@x}:#{@y}"
-
+  constructor: (x, y) ->
+    @x = x
+    @y = y
+  toString: ->
+    "#{@x}:#{@y}"
+  neighbors: ->
+    neighbors = new Set
+    neighbors.add new Point @x + dx, @y + dy for [dx, dy] in @neighboringOffsets
+    neighbors
   neighboringOffsets: [
     [-1, -1]
   , [-1,  0]
@@ -23,30 +47,19 @@ class Point
   , [ 1,  1]
   ]
 
-  neighbors: ->
-    @neighboringOffsets.reduce (neighbors, [dx, dy]) =>
-      neighbors.add new Point(@x + dx, @y + dy)
-    , new Set
-
-  neighborsIn: (points) ->
-    @neighbors().reduce ((count, n) -> if points.contains(n) then count + 1 else count), 0
-
 class World
-  constructor: -> @pop = new Set
-  size: -> @pop.size()
-  add: (p) -> @pop.add p
-  contains: (p) -> @pop.contains p
-
-  nextGenTestSet: ->
-    @pop.reduce ((s, p) -> s.add p; s.addAll p.neighbors()), new Set
-
+  constructor: ->
+    @pop = new Set
+  testPop: ->
+    @pop.reduce (pop, p) ->
+      pop.add p
+      pop.addAll p.neighbors()
+    , new Set
+  shouldLive: (p) ->
+    alive = p.neighbors().count (q) => @pop.contains q
+    alive == 3 or ((@pop.contains p) and alive == 2)
   advance: ->
-    @pop = @nextGenTestSet().filter (p) =>
-      count = p.neighborsIn @pop
-      if @contains p
-        count == 2 or count == 3
-      else
-        count == 3
+    @pop = @testPop().filter (p) => @shouldLive p
 
 # exports
 global = exports ? this

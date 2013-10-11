@@ -23,7 +23,7 @@
     buildWorld: function(coords) {
       var _this = this;
       coords.forEach(function(coords) {
-        return _this.world.add(new Point(coords[0], coords[1]));
+        return _this.world.pop.add(new Point(coords[0], coords[1]));
       });
     },
     showPop: function() {
