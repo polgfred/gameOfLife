@@ -3,10 +3,9 @@
   var LifeUI, global;
 
   LifeUI = {
-    board: {},
-    world: new World,
     buildBoard: function(id) {
-      var col, div, elem, row, x, y, _i, _j;
+      var board, col, div, elem, row, x, y, _i, _j;
+      board = {};
       elem = document.getElementById(id);
       for (y = _i = 50; _i >= -50; y = _i += -1) {
         row = document.createElement('tr');
@@ -16,49 +15,53 @@
           row.appendChild(col);
           div = document.createElement('div');
           col.appendChild(div);
-          this.board[new Point(x, y)] = div;
+          board[new Point(x, y)] = div;
         }
       }
+      this.board = board;
+      return this;
     },
     buildWorld: function(coords) {
-      var _this = this;
-      coords.forEach(function(coords) {
-        return _this.world.pop.add(new Point(coords[0], coords[1]));
-      });
+      var world, x, y, _i, _len, _ref;
+      world = new World;
+      for (_i = 0, _len = coords.length; _i < _len; _i++) {
+        _ref = coords[_i], x = _ref[0], y = _ref[1];
+        world.pop.add(new Point(x, y));
+      }
+      this.world = world;
+      return this;
     },
     showPop: function() {
       var _this = this;
-      return this.world.pop.each(function(p) {
+      this.world.pop.each(function(p) {
         var div;
         div = _this.board[p];
         if (div) {
           return div.setAttribute('class', 'alive');
         }
       });
+      return this;
     },
     hidePop: function() {
       var _this = this;
-      return this.world.pop.each(function(p) {
+      this.world.pop.each(function(p) {
         var div;
         div = _this.board[p];
         if (div) {
           return div.removeAttribute('class');
         }
       });
+      return this;
     },
-    loopForever: function() {
+    loopForever: function(timeout) {
       var _this = this;
       this.showPop();
-      return setTimeout(function() {
+      setTimeout(function() {
         _this.hidePop();
         _this.world.advance();
-        return _this.loopForever();
-      }, 200);
-    },
-    start: function(id, coords) {
-      this.buildBoard(id);
-      this.buildWorld(coords);
-      return this.loopForever();
+        return _this.loopForever(timeout);
+      }, timeout);
+      return this;
     }
   };
 

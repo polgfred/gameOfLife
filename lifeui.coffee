@@ -1,47 +1,46 @@
 LifeUI =
-  board: {}
-  world: new World
-
   buildBoard: (id) ->
-    elem = document.getElementById(id)
+    # build an HTML table and cache <div>s by point
+    board = {}
+    elem = document.getElementById id
     for y in [50..-50] by -1
-      row = document.createElement('tr')
-      elem.appendChild(row)
+      row = document.createElement 'tr'
+      elem.appendChild row
       for x in [-50..50] by 1
-        col = document.createElement('td')
-        row.appendChild(col)
-        div = document.createElement('div')
-        col.appendChild(div)
-        @board[new Point(x, y)] = div
-    return
-
+        col = document.createElement 'td'
+        row.appendChild col
+        div = document.createElement 'div'
+        col.appendChild div
+        board[new Point x, y] = div
+    @board = board
+    @
+  # build the initial world
   buildWorld: (coords) ->
-    coords.forEach (coords) =>
-      @world.pop.add(new Point(coords[0], coords[1]))
-    return
-
+    world = new World
+    world.pop.add new Point x, y for [x, y] in coords
+    @world = world
+    @
+  # set all the living point cells to class=alive
   showPop: ->
     @world.pop.each (p) =>
       div = @board[p]
-      div.setAttribute('class', 'alive') if div
-
+      div.setAttribute 'class', 'alive' if div
+    @
+  # unset all living cells' class attribute
   hidePop: ->
     @world.pop.each (p) =>
       div = @board[p]
-      div.removeAttribute('class') if div
-
-  loopForever: ->
+      div.removeAttribute 'class' if div
+    @
+  # show/wait/hide/advance loop
+  loopForever: (timeout) ->
     @showPop()
     setTimeout =>
       @hidePop()
       @world.advance()
-      @loopForever()
-    , 200
-
-  start: (id, coords) ->
-    @buildBoard(id)
-    @buildWorld(coords)
-    @loopForever()
+      @loopForever timeout
+    , timeout
+    @
 
 # exports
 global = exports ? this

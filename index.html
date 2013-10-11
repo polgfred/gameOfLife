@@ -45,13 +45,16 @@
     <script>
       document.addEventListener('DOMContentLoaded', function() {
         // the F-pentomino
-        LifeUI.start('world', [
-          [ 0,  1]
-        , [ 1,  1]
-        , [-1,  0]
-        , [ 0,  0]
-        , [ 0, -1]
-        ]);
+        LifeUI
+          .buildBoard('world')
+          .buildWorld([
+            [ 0,  1],
+            [ 1,  1],
+            [-1,  0],
+            [ 0,  0],
+            [ 0, -1],
+          ])
+          .loopForever(200);
       }, false);
     </script>
   </head>
