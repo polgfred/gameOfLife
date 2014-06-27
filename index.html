@@ -40,23 +40,7 @@
         background-color: #222;
       }
     </style>
-    <script src="life.js"></script>
-    <script src="lifeui.js"></script>
-    <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        // the F-pentomino
-        LifeUI
-          .buildBoard('world')
-          .buildWorld([
-            [ 0,  1],
-            [ 1,  1],
-            [-1,  0],
-            [ 0,  0],
-            [ 0, -1],
-          ])
-          .loopForever(200);
-      }, false);
-    </script>
+    <script src="scripts/require.js" data-main="scripts/main"></script>
   </head>
   <body>
     <h2>Conway's Game of Life</h2>
