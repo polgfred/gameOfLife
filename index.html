@@ -40,7 +40,23 @@
         background-color: #222;
       }
     </style>
-    <script src="scripts/require.js" data-main="scripts/main"></script>
+    <script src="scripts/require.js"></script>
+    <script>
+      require.config({
+        baseUrl: 'scripts'
+      });
+      require(['lifeui'], function(lifeui) {
+        // the F-pentomino
+        lifeui
+          .buildBoard('world')
+          .buildWorld([ [ 0,  1],
+                        [ 1,  1],
+                        [-1,  0],
+                        [ 0,  0],
+                        [ 0, -1] ])
+          .loopForever(200);
+      });
+    </script>
   </head>
   <body>
     <h2>Conway's Game of Life</h2>
