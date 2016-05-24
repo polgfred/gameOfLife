@@ -11,7 +11,7 @@ export class Set {
     es.each((e) => this.add(e));
   }
 
-  contains(e) {
+  has(e) {
     return !!this.storage[e];
   }
 
@@ -36,7 +36,7 @@ export class Set {
   }
 }
 
-var neighboringOffsets = [
+const neighboringOffsets = [
   [-1, -1],
   [-1,  0],
   [-1,  1],
@@ -58,14 +58,14 @@ export class Point {
   }
 
   neighbors() {
-    return neighboringOffsets.reduce((neighbors, offsets) => {
-      neighbors.add(new Point(this.x + offsets[0], this.y + offsets[1]));
+    return neighboringOffsets.reduce((neighbors, [ dx, dy ]) => {
+      neighbors.add(new Point(this.x + dx, this.y + dy));
       return neighbors;
     }, new Set);
   }
 
   neighborCountInSet(points) {
-    return this.neighbors().reduce((count, n) => points.contains(n) ? count + 1 : count, 0);
+    return this.neighbors().reduce((count, n) => points.has(n) ? count + 1 : count, 0);
   }
 }
 
@@ -86,7 +86,7 @@ export class World {
     this.population = this.nextGenTestSet().filter((p) => {
       var neighborCount = p.neighborCountInSet(this.population);
 
-      return this.population.contains(p) ?
+      return this.population.has(p) ?
         neighborCount == 2 || neighborCount == 3 :
         neighborCount == 3;
     });

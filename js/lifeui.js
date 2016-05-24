@@ -28,8 +28,8 @@ export default {
   buildWorld(coords) {
     world = new World;
 
-    coords.forEach((coords) => {
-      world.population.add(new Point(coords[0], coords[1]));
+    coords.forEach(([ x, y ]) => {
+      world.population.add(new Point(x, y));
     });
 
     return this;
