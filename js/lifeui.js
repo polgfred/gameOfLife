@@ -1,12 +1,16 @@
+import immutable from 'immutable';
 import { Point, World } from './life';
 
 let board;
 let world;
 
-export default {
-  buildBoard(id) {
-    board = {};
+export class UI {
+  constructor() {
+    this.board = immutable.Map();
+    this.world = new World;
+  }
 
+  buildBoard(id) {
     let element = document.getElementById(id);
 
     for (let y = 50; y >= -50; y--) {
@@ -18,47 +22,45 @@ export default {
         row.appendChild(col);
         let div = document.createElement('div');
         col.appendChild(div);
-        board[new Point(x, y)] = div;
+        this.board = this.board.set(new Point({ x, y }), div);
       }
     }
 
     return this;
-  },
+  }
 
   buildWorld(coords) {
-    world = new World;
-
     coords.forEach(([ x, y ]) => {
-      world.population.add(new Point(x, y));
+      this.world.add(new Point({ x, y }));
     });
 
     return this;
-  },
+  }
 
   showPopulation() {
-    world.population.each((p) => {
-      let div = board[p];
+    this.world.population.forEach((p) => {
+      let div = this.board.get(p);
       if (div) {
         div.setAttribute('class', 'alive');
       }
     });
-  },
+  }
 
   hidePopulation() {
-    world.population.each((p) => {
-      let div = board[p];
+    this.world.population.forEach((p) => {
+      let div = this.board.get(p);
       if (div) {
         div.removeAttribute('class');
       }
     });
-  },
+  }
 
   loopForever(delay) {
     this.showPopulation();
 
     setTimeout(() => {
       this.hidePopulation();
-      world.advance();
+      this.world.advance();
       this.loopForever(delay);
     }, delay);
   }

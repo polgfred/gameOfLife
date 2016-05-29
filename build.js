@@ -1,7 +1,7 @@
-import lifeui from './js/lifeui';
+import { UI } from './js/lifeui';
 
 document.addEventListener('DOMContentLoaded', () => {
-  lifeui
+  new UI()
     .buildBoard('world')
     .buildWorld([
       [ 0,  1],
@@ -10,5 +10,5 @@ document.addEventListener('DOMContentLoaded', () => {
       [ 0,  0],
       [ 0, -1]
     ])
-    .loopForever(200);
+    .loopForever(100);
 }, false);
